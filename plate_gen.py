@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
+import math
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
@@ -38,9 +39,9 @@ def AddSmudginess(img, smu):
 def rot(img, angel, shape, max_angel):
     size_o = [shape[1],shape[0]]
 
-    size = (shape[1] + int(shape[0]*cos((float(max_angel)/180) * 3.14)), shape[0])
+    size = (shape[1] + int(shape[0]*math.cos((float(max_angel)/180) * 3.14)), shape[0])
 
-    interval = abs(int(sin((float(angel) / 180) * 3.14) * shape[0]))
+    interval = abs(int(math.sin((float(angel) / 180) * 3.14) * shape[0]))
 
     pts1 = np.float32([[0, 0], [0, size_o[1]], [size_o[0], 0], [size_o[0], size_o[1]]])
     if angel > 0:
@@ -166,8 +167,8 @@ class GenPlate:
             fg = self.draw(text.decode(encoding="utf-8"))
             fg = cv2.bitwise_not(fg)
             com = cv2.bitwise_or(fg, self.bg)
-            com = rot(com,r(60)-30, com.shape,30)
-            com = rotRandrom(com,10, (com.shape[1],com.shape[0]))
+            com = rot(com, r(60)-30, com.shape, 30)
+            com = rotRandrom(com, 10, (com.shape[1], com.shape[0]))
             # com = AddSmudginess(com,self.smu)
 
             com = tfactor(com)
@@ -200,12 +201,15 @@ class GenPlate:
         if not os.path.exists(outputPath):
             os.mkdir(outputPath)
         for i in xrange(batchSize):
-                plateStr = G.genPlateString(-1, -1)
-                img = G.generate(plateStr)
-                img = cv2.resize(img,size)
+                plate_str = G.genPlateString(-1, -1)
+                print('plate_str', plate_str)
+                img = G.generate(plate_str)
+                cv2.imshow('img', img)
+                cv2.waitKey(0)
+                img = cv2.resize(img, size)
                 cv2.imwrite(outputPath + "/" + str(i).zfill(2) + ".jpg", img)
 
 
 if __name__ == '__main__':
-    G = GenPlate("./font/platech.ttf",'./font/platechar.ttf',"./NoPlates")
-    G.genBatch(100,2,range(31,65),"./plate",(272,72))
+    G = GenPlate("./font/platech.ttf", './font/platechar.ttf', "./NoPlates")
+    G.genBatch(100, 2, range(31, 65), "./cyl_plate", (272, 72))
