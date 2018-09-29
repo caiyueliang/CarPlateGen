@@ -10,6 +10,12 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+.idea/
+NoPlates/
+images/
+recognize_samples/
+plates/
+cyl_plates/
 build/
 develop-eggs/
 dist/
